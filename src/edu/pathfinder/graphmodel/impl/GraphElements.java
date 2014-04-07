@@ -30,10 +30,12 @@ public class GraphElements {
         private boolean packetSwitchCapable;
         private boolean tdmSwitchCapable;
         private String iconName;
+        private boolean visited;
         
         public Vertex(String name) {
             this.name = name;
             this.setInclude(false);
+            visited = false;
         }
         
         public Vertex(String name, boolean include) {
@@ -89,6 +91,15 @@ public class GraphElements {
 		public boolean isNode() {
 			return true;
 		}
+		
+		public void setVisited(boolean val){
+			this.visited = val;
+		}
+
+		@Override
+		public boolean isVisited() {
+			return visited;
+		}
     }
     
     public static class Edge implements GraphElement{
@@ -96,10 +107,12 @@ public class GraphElements {
         private double weight;
         private boolean include;
         private String name;
+        private boolean visited;
 
         public Edge(String name) {
             this.name = name;
             this.setInclude(false);
+            visited = false;
         }
         
         public Edge(String name,boolean include) {
@@ -147,6 +160,17 @@ public class GraphElements {
 		public boolean isNode() {
 			return false;
 		}
+		
+		public void setVisited(boolean val){
+			this.visited = val;
+		}
+
+		@Override
+		public boolean isVisited() {
+			return visited;
+		}
+		
+		
     }
     
     // Single factory for creating Vertices...

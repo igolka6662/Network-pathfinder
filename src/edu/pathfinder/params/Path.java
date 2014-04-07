@@ -47,6 +47,14 @@ public class Path implements Comparator<Path>,Comparable<Path>{
 	public void setElements(List<GraphElement> elements) {
 		this.elements = elements;
 	}
+	
+	public void addElement(GraphElement ge){
+		elements.add(ge);
+	}
+	
+	public void deleteElement(GraphElement ge){
+		elements.remove(ge);
+	}
 
 	@Override
 	public int compareTo(Path arg) {
