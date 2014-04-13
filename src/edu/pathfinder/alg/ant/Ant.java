@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,22 +26,23 @@ import edu.uci.ics.jung.graph.Graph;
 public class Ant implements AlgSolver{
 	
 	public Ant(){
-		feramonOnEdges = new HashMap<Edge, Double>();
-		visitedEdges = new ArrayList<Edge>();
-		chance = new HashMap<EdgeNode, Double>();
 		candidats = new ArrayList<Path>();
-		countOfIncludes = 0;
+		countOfIncludesInBP = 0;
+		feramonOnEdges = new HashMap<Edge, Double>();
+		init();
 	}
 	
 	/* TODO dynamic*/
 	private int eras = 5;
-	private int iterCount = 4;
+	private int iterCount = 6;
 	
 	private int alfa = 4;
 	
 	private int beta = 3;
 	
 	private List<Edge> visitedEdges;
+	
+	private List<Vertex> visitedNodes;
 	
 	private Map<Edge, Double> feramonOnEdges;
 	
@@ -62,36 +64,50 @@ public class Ant implements AlgSolver{
 	
 	private double currentAddition;
 	
-	private void generateRandomFeramon(Map<Edge, Double> ferEdg, int interval){
+	private void generateRandomFeramon(Graph g, Map<Edge, Double> ferEdg, int interval){
 		Random rand = new Random();
-		for (Edge edge : ferEdg.keySet()){
-			ferEdg.put(edge, rand.nextDouble()*interval);
+		for (Object edge : g.getEdges()){
+			ferEdg.put((Edge) edge, rand.nextDouble()*interval);
 		}
 	}
 	
 	
 	private void init(){
-		
+		//feramonOnEdges = new HashMap<Edge, Double>();
+		visitedEdges = new ArrayList<Edge>();
+		visitedNodes = new ArrayList<Vertex>();
+		chance = new LinkedHashMap<EdgeNode, Double>();
+		countOfIncludes = 0;
+		countOfIncludesInIter = 0;
 	}
 	
 	private void reset(){
-		
+		visitedEdges = new ArrayList<Edge>();
+		visitedNodes = new ArrayList<Vertex>();
+		chance = new LinkedHashMap<EdgeNode, Double>();
+		countOfIncludesInBP = 0;
+		countOfIncludesInIter = 0;
 	}
 	
-	private void serPredefinedFeramon(Map<Edge, Double> ferEdg, Double value){
-		for (Edge edge : ferEdg.keySet()){
-			ferEdg.put(edge, value);
+	private void serPredefinedFeramon(Graph g,Map<Edge, Double> ferEdg, Double value){
+		for (Object edge : g.getEdges()){
+			ferEdg.put((Edge) edge, value);
 		}
 	}
 
 	@Override
 	public Path findPath(Graph g, WeightFunction wf,
 			Strategy strategy, Constraint cn, Vertex A, Vertex Z) {
+		countOfIncludes = cn.getIncludes().size();
+		
+		generateRandomFeramon(g, feramonOnEdges, 10);
 		
 		for (int era=0; era<eras;era++)
 		{
+			init();
 			for (int iter=0; iter<iterCount ; iter++ ){
-				candidats.add(findOnePath(g, wf, strategy, cn, A, Z));
+				Path candidat = findOnePath(g, wf, strategy, cn, A, Z);
+				if (candidat!=null) candidats.add(candidat);
 				reset();
 			}
 		}
@@ -112,7 +128,6 @@ public class Ant implements AlgSolver{
 	
 	private Path findOnePath(Graph g, WeightFunction wf,
 			Strategy strategy, Constraint cn, Vertex A, Vertex Z){
-		generateRandomFeramon(feramonOnEdges, 10);
 		
 		/* Init block */
 		
@@ -123,29 +138,46 @@ public class Ant implements AlgSolver{
 		
 		Path path = new Path();
 		
-		boolean flagStart = true;
-		
-		Vertex currentNode = null;
-		
-		if (!flagStart){
-			currentNode = A;
-			flagStart=true;
-		}
+		Vertex currentNode = A;
+		EdgeNode current = null;
 		boolean dontfind = false;
-		double pathLength = 0;
-
+		
+		visitedNodes.add(A);
+		path.addElement(A);
+		
 		while (!(currentNode.equals(Z))){
 			
-			//TODO get incident nodes. Nodes or Nodes and Edges
-			Collection<Vertex> notCheckedIncidentNodes = graph.getIncidentVertices(currentNode);
+			System.out.println("CurrentNode:"+currentNode.getName());
+			System.out.println("Z:"+Z.getName());
+			System.out.println(currentNode.equals(Z));
+			
+			Collection<Edge> notCheckedIncidentEdges = graph.getIncidentEdges(currentNode);
+			//System.out.println("notCheckedIncidentEdges:"+notCheckedIncidentEdges);
+			ArrayList<Edge> checkedIncidentEdges = new ArrayList<>();
+			
+			for (Object edge : notCheckedIncidentEdges){
+				if (!visitedEdges.contains(edge)) checkedIncidentEdges.add((Edge) edge);
+			}
+			
+			System.out.println("checkedIncidentEdges:"+checkedIncidentEdges);
+			ArrayList<Vertex> notCheckedIncidentNodes = new ArrayList<Vertex>();
+			
+			for (Object edge : checkedIncidentEdges){
+				notCheckedIncidentNodes.addAll(g.getIncidentVertices(edge));
+			}
+			
+			System.out.println("notCheckedIncidentNodes:"+notCheckedIncidentNodes);
 			
 			ArrayList<Vertex> checkedIncidentNodes = new ArrayList<>();
 			//check, maybe we visited it?
 			for (Vertex node : notCheckedIncidentNodes){
-				if (visitedEdges.contains(node)) checkedIncidentNodes.add(node);
+				if (!visitedNodes.contains(node)) checkedIncidentNodes.add(node);
 			}
+			
+			System.out.println("checkedIncidentNodes:"+checkedIncidentNodes);
+			
 			//if there is not incident nodes then end for this ant
-			if (checkedIncidentNodes.size() == 0){
+			if (checkedIncidentNodes.size() == 0 || checkedIncidentEdges.size() == 0){
 				System.out.println("Я заблудился и попал в тупик");
 				dontfind = true;
 				break;
@@ -155,26 +187,32 @@ public class Ant implements AlgSolver{
 			
 			Collection<Edge> incidentEdges = new ArrayList<Edge>();
 			for (Vertex vertex : checkedIncidentNodes){
-				incidentEdges.addAll(graph.getIncidentEdges(vertex));
+				incidentEdges.addAll(graph.getIncidentEdges(vertex)); //TODO проверить что он не затирает
 			}
 			
 			List<EdgeNode> incidentParts = new ArrayList<EdgeNode>();
 			for (Vertex vertex : checkedIncidentNodes){
 				for (Object obj : graph.getIncidentEdges(vertex)){
 					Edge edge = (Edge) obj;
-					incidentParts.add(new EdgeNode(vertex, edge, strategy.concatinate(wf.getWeight(vertex), wf.getWeight(edge))));
+					int include = 0;
+					if (cn.getIncludes().contains(edge)) include++;
+					if (cn.getIncludes().contains(vertex)) include++;
+					System.out.println(vertex.getName() + " "+ edge.getName());
+					incidentParts.add(new EdgeNode(vertex, edge, strategy.concatinate(wf.getWeight(vertex), wf.getWeight(edge)), include));
 				}
 			}
 			
-			//TODO sorting is required???
+			Collections.sort(incidentParts);
 			
 			double total = 0.0;
 			int temp = 0;
 			for (EdgeNode en : incidentParts){
 				double currentFeramon = 0.0;
+				//System.out.println("Size:"+feramonOnEdges.size());
 				currentFeramon = Math.pow((feramonOnEdges.get(en.getEdge())),alfa); //TODO only from edges???
 				feramonOnEdges.put(en.getEdge(), currentFeramon);
-				total = total + Math.pow(currentFeramon,alfa)*Math.pow((1/temp++),beta);
+				total = total + Math.pow(currentFeramon,alfa)*Math.pow((1/++temp),beta);
+				System.out.println("Total:"+total);
 			}
 			
 			temp = 1;
@@ -209,15 +247,36 @@ public class Ant implements AlgSolver{
 				}
 			}
 			
-			path.addElement(currentNode);
-			currentNode.setVisited(true);
+			System.out.println("Min:"+minimal);
 			
-			currentNode = (Vertex) chance.keySet().toArray()[minimal];
+			int pos = 0;
+			for (EdgeNode en: chance.keySet()){
+				if (pos == minimal){
+					current = en;
+					break;
+				}
+				pos++;
+			}
 			
+			System.out.println("Current:"+current.getEdge().getName()+current.getNode().getName());
+			
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			path.addElement(current);
+			visitedNodes.add(current.getNode());
+			visitedEdges.add(current.getEdge());
+			System.out.println("Before current:"+currentNode.getName());
+			currentNode = current.getNode();
+			
+			if (currentNode.equals(Z)) dontfind = true;
+			
+			System.out.println("After current:"+currentNode.getName());
 			/* End rolling next step */
-			
-			
-			/* get next step end */
 			
 		}
 		if (dontfind){
@@ -265,6 +324,7 @@ public class Ant implements AlgSolver{
 					feramonOnEdges.put(ed, feramonOnEdges.get(ed)*evaporation);
 				}
 			}
+			return null; //TODO Check for it
 		}
 		
 		return path;

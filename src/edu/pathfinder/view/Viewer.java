@@ -1,11 +1,19 @@
 package edu.pathfinder.view;
 
+import edu.pathfinder.params.Path;
+import edu.pathfinder.utils.Tools;
 import edu.pathfinder.view.menu.MouseMenus;
 import edu.pathfinder.view.menu.PopupVertexEdgeMenuMousePlugin;
 import edu.pathfinder.view.models.ParamsComboBoxModel;
 import edu.pathfinder.view.renderers.MultiVertexRenderer;
 import edu.pathfinder.view.renderers.VertexIcon;
+import edu.pathfinder.wf.WeightFunction;
+import edu.pathfinder.wf.impl.TestWeightFunction;
+import edu.pathfinder.alg.ant.Ant;
 import edu.pathfinder.core.Configuration;
+import edu.pathfinder.criter.Strategy;
+import edu.pathfinder.criter.impl.SumStrategy;
+import edu.pathfinder.graphmodel.Constraint;
 import edu.pathfinder.graphmodel.GraphElement;
 import edu.pathfinder.graphmodel.impl.GraphElements;
 import edu.pathfinder.graphmodel.impl.GraphElements.Edge;
@@ -40,6 +48,24 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.collections15.Transformer;
 
 /**
@@ -49,13 +75,17 @@ import org.apache.commons.collections15.Transformer;
  */
 public class Viewer implements  ActionListener{
 	
-	private final int FORM_HEIGHT = 600;
-	private final int FORM_WIDTH = 1000;
-	private final int PAINT_HEIGHT = 600;
-	private final int PAINT_WIDTH = 1000;
+	private final static int FORM_HEIGHT = 800;
+	private final static int FORM_WIDTH = 1650;
+	private final static int PAINT_HEIGHT = 1000;
+	private final static int PAINT_WIDTH = 600;
+	private final static int JAVAFX_SCENE_HEIGHT = 1000;
+	private final static int JAVAFX_SCENE_WIDTH = 1600;
+	
+	private final static int SDVIG = 600;
 	
 	public JComboBox comboBox1,comboBox2;
-	public JButton getVertexes,deikstra,deikstraButton;
+	public JButton getVertexes,antButton,deikstraButton;
 	private String A = null;
 	private String Z = null;
 	Graph<GraphElements.Vertex, GraphElements.Edge> g;
@@ -67,6 +97,8 @@ public class Viewer implements  ActionListener{
     	System.out.println(conf.getApplicationLanguage());
     	System.out.println(new File(".").getAbsolutePath()); // current directory
     	JFrame frame = new JFrame("Editing and Mouse Menu Demo");
+    	frame.setPreferredSize(new Dimension(FORM_WIDTH, FORM_HEIGHT));
+    	frame.setLayout(null);
 //      SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g = 
 //              new SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge>();
 //      SelectGraphDialog dialog = new SelectGraphDialog(frame);
@@ -86,8 +118,8 @@ public class Viewer implements  ActionListener{
       vv.getRenderContext().setVertexIconTransformer(new VertexIcon());
       /* End add node renderer mine*/
        
-       
       vv.setSize(new Dimension(PAINT_HEIGHT,PAINT_WIDTH));
+      vv.setLocation(SDVIG+0,50);
       // Show vertex and edge labels
       vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
       vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
@@ -120,13 +152,16 @@ public class Viewer implements  ActionListener{
       // Let's add a menu for changing mouse modes
       JMenuBar menuBar = new JMenuBar();
       JMenu modeMenu = gm.getModeMenu();
-      modeMenu.setText("Mouse Mode");
+      modeMenu.setLocation(SDVIG, 0);
+      modeMenu.setText("Mouse settings");
       modeMenu.setIcon(null); // I'm using this in a main menu
-      modeMenu.setPreferredSize(new Dimension(80,20)); // Change the size so I can see the text
+      modeMenu.setPreferredSize(new Dimension(100,20)); // Change the size so I can see the text
       
       menuBar.add(modeMenu);
       frame.setJMenuBar(menuBar);
       gm.setMode(ModalGraphMouse.Mode.EDITING); // Start off in editing mode
+      
+      
       //
       JPanel panel = new JPanel();
       comboBox1 = new JComboBox();
@@ -143,12 +178,12 @@ public class Viewer implements  ActionListener{
       
       
       //finding paths
-      deikstra = new JButton("Find path by Ant");
+      antButton = new JButton("Find path by Ant");
       //deikstra.addActionListener(new AntListener(g,vv,comboBox1,comboBox2));
-      deikstra.addActionListener(this);
-      deikstra.setSize(150,50);
-      deikstra.setLocation(200, 300);  
-      deikstra.setVisible(true);
+      antButton.addActionListener(this);
+      antButton.setSize(150,50);
+      antButton.setLocation(SDVIG+200, 300);  
+      antButton.setVisible(true);
       //
       
     //finding paths
@@ -156,7 +191,7 @@ public class Viewer implements  ActionListener{
       //deikstra.addActionListener(new AntListener(g,vv,comboBox1,comboBox2));
       deikstraButton.addActionListener(this);
       deikstraButton.setSize(150,50);
-      deikstraButton.setLocation(200, 300);  
+      deikstraButton.setLocation(SDVIG+200, 300);  
       deikstraButton.setVisible(true);
       //
       
@@ -164,21 +199,41 @@ public class Viewer implements  ActionListener{
       getVertexes = new JButton("Get vertexes");
       getVertexes.setSize(150,50);
       getVertexes.addActionListener(this);
-      getVertexes.setLocation(200, 300);  
+      getVertexes.setLocation(SDVIG+200, 300);  
       getVertexes.setVisible(true);
       //
       
       panel.add(getVertexes);
-      panel.add(deikstra);
+      panel.add(antButton);
       panel.add(deikstraButton);
-      frame.add(panel, BorderLayout.NORTH);
+      panel.setSize(PAINT_HEIGHT, 50);
+      panel.setLocation(SDVIG+0,0);
+      //frame.add(panel, BorderLayout.NORTH);
+      frame.add(panel);
       
       //frame.add(deikstra);
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       frame.getContentPane().add(vv);
       frame.setSize(new Dimension(FORM_WIDTH,FORM_HEIGHT));
       frame.pack();
-      frame.setVisible(true);    
+      frame.setVisible(true);
+      
+      /* JAVA FX start*/
+      final JFXPanel fxPanel = new JFXPanel();
+      fxPanel.setSize(JAVAFX_SCENE_WIDTH, JAVAFX_SCENE_HEIGHT);
+      //fxPanel.setLocation(PAINT_WIDTH, PAINT_HEIGHT);
+      //fxPanel.setLocation(PAINT_HEIGHT, PAINT_WIDTH);
+      frame.add(fxPanel);
+      //frame sets position on monitor
+      
+      Platform.runLater(new Runnable() {
+          @Override
+          public void run() {
+              initFX(fxPanel);
+          }
+     });
+      
+      /* JAVA FX end*/
     }
     
     public void actionPerformed(ActionEvent e) {
@@ -195,8 +250,15 @@ public class Viewer implements  ActionListener{
     		comboBox1.setModel(model);
     		comboBox2.setModel(model);
     	}
-    	else if (e.getSource() == deikstra){
-    		ArrayList<GraphElement> elements = null;
+    	else if (e.getSource() == antButton){
+    		List<GraphElement> elements = null;
+    		
+    		Ant antAlg = new Ant();
+    		WeightFunction wf = new TestWeightFunction();
+    		Strategy st = new SumStrategy();
+    		Constraint cn = new Constraint(new ArrayList<GraphElement>(), false, null, null);
+    		Path path = antAlg.findPath(g, wf, st, cn, Tools.getVertexByName(g, A), Tools.getVertexByName(g, Z));
+    		elements = path.getElements();
     		final List<GraphElement> el = elements;
        	Transformer<Edge, Paint> edgePaint = new Transformer<Edge, Paint>() {
     	    public Paint transform(Edge s) {
@@ -226,6 +288,69 @@ public class Viewer implements  ActionListener{
     		System.out.println("Deikstra end");
     	}
     	
+    }
+    
+    private static void initFX(JFXPanel fxPanel) {
+        // This method is invoked on the JavaFX thread
+        Scene scene = createScene();
+        fxPanel.setScene(scene);
+    }
+    
+    private static Scene createScene() {
+        Group  root  =  new  Group();
+        Scene  scene  =  new  Scene(root, Color.BITMASK, 900);
+        /* Tabs start */ 
+        TabPane tabPane = new TabPane();
+        
+        BorderPane mainPane = new BorderPane();
+        
+        
+        //Create Tabs
+        Tab tabA = new Tab();
+        tabA.setText("Tab A");
+        //Add something in Tab
+        Button tabA_button = new Button("Button@Tab A");
+        tabA.setContent(tabA_button);
+        tabPane.getTabs().add(tabA);
+      
+        Tab tabB = new Tab();
+        tabB.setText("Tab B");
+        //Add something in Tab
+        StackPane tabB_stack = new StackPane();
+        tabB_stack.setAlignment(Pos.CENTER);
+        tabB_stack.getChildren().add(new Label("Label@Tab B"));
+        tabB.setContent(tabB_stack);
+        tabPane.getTabs().add(tabB);
+        
+        
+        mainPane.setCenter(tabPane);
+        
+        mainPane.prefHeightProperty().bind(scene.heightProperty());
+        mainPane.prefWidthProperty().bind(scene.widthProperty());
+        
+        /* Tabs end */
+        
+        /* Text area start*/
+        final TextArea textArea = new TextArea("Text Sample");
+        textArea.setStyle("-fx-text-fill: black;");
+        textArea.setPrefSize(PAINT_HEIGHT, 80);
+        textArea.setLayoutX(SDVIG);
+        textArea.setLayoutY(650);
+        /* Text area end */
+        
+        
+        Text  text  =  new  Text();
+        
+        text.setX(650);
+        text.setY(100);
+        text.setFont(new Font(25));
+        text.setText("Welcome JavaFX!");
+
+        root.getChildren().add(text);
+        root.getChildren().add(mainPane);
+        root.getChildren().add(textArea);
+
+        return (scene);
     }
     
 }

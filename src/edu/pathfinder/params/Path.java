@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import edu.pathfinder.graphmodel.GraphElement;
+import edu.pathfinder.utils.EdgeNode;
 
 /*
  * Comparator uses to sorting for exemple by name, weight and etc...
@@ -16,7 +17,7 @@ import edu.pathfinder.graphmodel.GraphElement;
 public class Path implements Comparator<Path>,Comparable<Path>{
 	
 	public Path(){
-		setElements(new ArrayList<GraphElement>());
+		elements = new ArrayList<GraphElement>();
 		setWeight(0.0);
 	}
 	
@@ -50,6 +51,17 @@ public class Path implements Comparator<Path>,Comparable<Path>{
 	
 	public void addElement(GraphElement ge){
 		elements.add(ge);
+	}
+	
+	public void addElement(EdgeNode ge){
+		elements.add(ge.getEdge());
+		elements.add(ge.getNode());
+		weight += ge.getWeight();
+	}
+	
+	public void addElement(GraphElement ge, Double weight){
+		elements.add(ge);
+		this.weight = weight;
 	}
 	
 	public void deleteElement(GraphElement ge){
