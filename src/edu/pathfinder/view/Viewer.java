@@ -10,6 +10,9 @@ import edu.pathfinder.view.renderers.VertexIcon;
 import edu.pathfinder.wf.WeightFunction;
 import edu.pathfinder.wf.impl.TestWeightFunction;
 import edu.pathfinder.alg.ant.Ant;
+import edu.pathfinder.alg.astar.AStar;
+import edu.pathfinder.alg.deikstra.Deikstra;
+import edu.pathfinder.alg.yen.Yen;
 import edu.pathfinder.core.Configuration;
 import edu.pathfinder.criter.Strategy;
 import edu.pathfinder.criter.impl.SumStrategy;
@@ -251,13 +254,32 @@ public class Viewer implements  ActionListener{
     		comboBox2.setModel(model);
     	}
     	else if (e.getSource() == antButton){
-    		List<GraphElement> elements = null;
     		
-    		Ant antAlg = new Ant();
+    		Deikstra d = new Deikstra();
+    		//AStar a = new AStar();
+    		
+    		List<GraphElement> elements = null;
+    		Yen y = new Yen();
+    		
+    		//Ant antAlg = new Ant();
     		WeightFunction wf = new TestWeightFunction();
     		Strategy st = new SumStrategy();
     		Constraint cn = new Constraint(new ArrayList<GraphElement>(), false, null, null);
-    		Path path = antAlg.findPath(g, wf, st, cn, Tools.getVertexByName(g, A), Tools.getVertexByName(g, Z));
+    		List<Path> candidats= y.findPath(g, d, wf, st, cn, Tools.getVertexByName(g, A), Tools.getVertexByName(g, Z));
+    		for (Path p : candidats){
+    			System.out.println("Put:"+p);
+    		}
+    		long start = Runtime.getRuntime().freeMemory();
+    		//System.out.println(a.findPath(g, wf, st, cn, Tools.getVertexByName(g, A), Tools.getVertexByName(g, Z)));
+    		//System.out.println(d.findPath(g, wf, st, cn, Tools.getVertexByName(g, A), Tools.getVertexByName(g, Z)));
+    		long end = Runtime.getRuntime().freeMemory();
+    		long memoTaken = start - end;
+    		System.out.println("Memory took:"+memoTaken);
+    		System.out.println(Runtime.getRuntime().totalMemory());
+    		System.out.println(Runtime.getRuntime().maxMemory());
+    		Runtime r = Runtime.getRuntime();
+    		System.out.println(1 - r.freeMemory() / r.totalMemory());
+    		/*Path path = antAlg.findPath(g, wf, st, cn, Tools.getVertexByName(g, A), Tools.getVertexByName(g, Z));
     		elements = path.getElements();
     		final List<GraphElement> el = elements;
        	Transformer<Edge, Paint> edgePaint = new Transformer<Edge, Paint>() {
@@ -278,7 +300,7 @@ public class Viewer implements  ActionListener{
     	
     	vv.getRenderContext().setEdgeDrawPaintTransformer(edgePaint);
     	vv.getRenderContext().setVertexDrawPaintTransformer(vertexColor);
-        vv.repaint();
+        vv.repaint(); */
     	}
     	
     	else if (e.getSource() == deikstraButton){

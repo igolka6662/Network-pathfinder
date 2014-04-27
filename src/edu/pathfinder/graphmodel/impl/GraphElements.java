@@ -100,6 +100,21 @@ public class GraphElements {
 		public boolean isVisited() {
 			return visited;
 		}
+		
+		@Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final Vertex other = (Vertex) obj;
+            if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+                return false;
+            }
+            return true;
+        }
     }
     
     public static class Edge implements GraphElement{
@@ -169,6 +184,22 @@ public class GraphElements {
 		public boolean isVisited() {
 			return visited;
 		}
+		
+		@Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final Edge other = (Edge) obj;
+            
+            if (this.getWeight() != other.getWeight()) return false;
+            if (this.getName() != other.getName()) return false;
+            
+            return true;
+        }
 		
 		
     }

@@ -19,7 +19,7 @@ public class EdgeNode implements Comparable<EdgeNode>{
 	public EdgeNode(Vertex node, Edge edge, Double weigth){
 		this.node = node;
 		this.edge = edge;
-		this.weight = weight;
+		this.weight = weigth;
 		this.setInclude(0);
 	}
 	

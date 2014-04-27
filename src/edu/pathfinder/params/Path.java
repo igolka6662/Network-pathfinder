@@ -77,6 +77,11 @@ public class Path implements Comparator<Path>,Comparable<Path>{
 		return 0;
 	}
 	
+	public String toString(){
+		return "Path:"+this.getElements().toString()+ " his weight is "+this.getWeight();
+		
+	}
+	
 	
 
 }
