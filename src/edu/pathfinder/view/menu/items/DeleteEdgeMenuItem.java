@@ -1,5 +1,6 @@
 package edu.pathfinder.view.menu.items;
 
+import edu.pathfinder.core.Localization;
 import edu.pathfinder.view.menu.EdgeMenuListener;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
@@ -38,7 +39,7 @@ public class DeleteEdgeMenuItem<E> extends JMenuItem implements EdgeMenuListener
     public void setEdgeAndView(E edge, VisualizationViewer visComp) {
         this.edge = edge;
         this.visComp = visComp;
-        this.setText("Delete Edge " + edge.toString());
+        this.setText(Localization.getInstance().getLocalizedString("DELETE")+ " " + edge.toString());
     }
     
 }

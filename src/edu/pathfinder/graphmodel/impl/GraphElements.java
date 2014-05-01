@@ -10,8 +10,11 @@ package edu.pathfinder.graphmodel.impl;
  */
 
 
+import java.util.Random;
+
 import org.apache.commons.collections15.Factory;
 
+import edu.pathfinder.core.Localization;
 import edu.pathfinder.graphmodel.GraphElement;
 
 /**
@@ -27,8 +30,7 @@ public class GraphElements {
     public static class Vertex implements GraphElement{
         private String name;
         private boolean include;
-        private boolean packetSwitchCapable;
-        private boolean tdmSwitchCapable;
+        private boolean exclude;
         private String iconName;
         private boolean visited;
         
@@ -36,11 +38,13 @@ public class GraphElements {
             this.name = name;
             this.setInclude(false);
             visited = false;
+            setExclude(false);
         }
         
         public Vertex(String name, boolean include) {
             this.name = name;
             this.setInclude(include);
+            setExclude(false);
         }
 
         public String getName() {
@@ -51,22 +55,6 @@ public class GraphElements {
             this.name = name;
         }
 
-        public boolean isPacketSwitchCapable() {
-            return packetSwitchCapable;
-        }
-
-        public void setPacketSwitchCapable(boolean packetSwitchCapable) {
-            this.packetSwitchCapable = packetSwitchCapable;
-        }
-
-        public boolean isTdmSwitchCapable() {
-            return tdmSwitchCapable;
-        }
-
-        public void setTdmSwitchCapable(boolean tdmSwitchCapable) {
-            this.tdmSwitchCapable = tdmSwitchCapable;
-        }
-        
         public String toString() {
             return name;
         }
@@ -115,19 +103,73 @@ public class GraphElements {
             }
             return true;
         }
+
+		@Override
+		public boolean isExclude() {
+			return exclude;
+		}
+
+		public void setExclude(boolean exclude) {
+			this.exclude = exclude;
+		}
     }
     
     public static class Edge implements GraphElement{
         private double capacity;
         private double weight;
         private boolean include;
+        private boolean exclude;
         private String name;
         private boolean visited;
+        private Double defaultWeight = 100.0;
+        private Double defaultCapacity = 100.0;
+        private Double maxWeight = 256.0;
+        private Double maxCapacity = 256.0;
+        private int includeRandomChance = 5;
+        private int excludeRandomChance = 5;
 
         public Edge(String name) {
             this.name = name;
             this.setInclude(false);
+            this.setExclude(false);
             visited = false;
+        }
+        
+        public Edge(String name, boolean isRandomParams, boolean isRandomInclude, boolean isRandomExclude ) {
+            this.name = name;
+            
+            visited = false;
+            Random rand = new Random();
+            if (isRandomParams){
+            	this.setWeight(rand.nextDouble() * maxWeight);
+            	this.setCapacity(rand.nextDouble() * maxCapacity);
+            }
+            else if (!isRandomParams){
+            	this.setWeight(defaultWeight);
+            	this.setCapacity(defaultCapacity);
+            }
+            if (isRandomInclude){
+            	if (rand.nextInt() * includeRandomChance == 1){
+            		this.setInclude(true); 
+            	}
+            	else{
+            		this.setInclude(false);
+            	}
+            }
+            else if (!isRandomInclude){
+            	this.setInclude(false);
+            }
+            if (isRandomExclude){
+            	if (rand.nextInt() * excludeRandomChance == 1){
+            		this.setExclude(true); 
+            	}
+            	else{
+            		this.setInclude(false);
+            	}
+            }
+            else if (!isRandomExclude){
+            	this.setExclude(false);
+            }
         }
         
         public Edge(String name,boolean include) {
@@ -200,6 +242,14 @@ public class GraphElements {
             
             return true;
         }
+
+		public boolean isExclude() {
+			return exclude;
+		}
+
+		public void setExclude(boolean exclude) {
+			this.exclude = exclude;
+		}
 		
 		
     }
@@ -207,8 +257,6 @@ public class GraphElements {
     // Single factory for creating Vertices...
     public static class MyVertexFactory implements Factory<Vertex> {
         private static int nodeCount = 0;
-        private static boolean defaultPSC = false;
-        private static boolean defaultTDM = true;
         private static String defaultIcon = "vertex.png";
         private static MyVertexFactory instance = new MyVertexFactory();
         
@@ -220,29 +268,11 @@ public class GraphElements {
         }
         
         public GraphElements.Vertex create() {
-            String name = "Node" + nodeCount++;
+            String name = Localization.getInstance().getLocalizedString("NODE_FACTORY_NAME") + nodeCount++;
             Vertex v = new Vertex(name);
             v.setIconName(defaultIcon);
-            v.setPacketSwitchCapable(defaultPSC);
-            v.setTdmSwitchCapable(defaultTDM);
             return v;
         }        
-
-        public static boolean isDefaultPSC() {
-            return defaultPSC;
-        }
-
-        public static void setDefaultPSC(boolean aDefaultPSC) {
-            defaultPSC = aDefaultPSC;
-        }
-
-        public static boolean isDefaultTDM() {
-            return defaultTDM;
-        }
-
-        public static void setDefaultTDM(boolean aDefaultTDM) {
-            defaultTDM = aDefaultTDM;
-        }
     }
     
     // Singleton factory for creating Edges...
@@ -261,7 +291,7 @@ public class GraphElements {
         }
         
         public GraphElements.Edge create() {
-            String name = "Link" + linkCount++;
+            String name = Localization.getInstance().getLocalizedString("LINK_FACTORY_NAME") + linkCount++;
             Edge link = new Edge(name);
             link.setWeight(defaultWeight);
             link.setCapacity(defaultCapacity);

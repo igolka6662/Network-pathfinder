@@ -1,0 +1,114 @@
+<?xml version="1.1" encoding="Windows-1251" ?>
+<words>
+<item name="Menu">
+	<ru>Меню</ru>
+	<en>Menu</en>
+	<fr>Menu</fr>
+</item>
+<item name="GET_VERTIXES">
+	<ru>Получить вершины</ru>
+	<en>Get vertixes</en>
+	<fr>Obtenez sommets</fr>
+</item>
+<item name="SETTINGS_TAB">
+	<ru>Настройки маршрутизации</ru>
+	<en>Pathfinding settings</en>
+	<fr>Settings</fr>
+</item>
+<item name="GRAPHICS_TAB">
+	<ru>Графики</ru>
+	<en>Graphics</en>
+	<fr>Graphics</fr>
+</item>
+<item name="MOUSE_SETTINGS">
+	<ru>Настройки проектирования</ru>
+	<en>Design settings</en>
+	<fr>Fixer de</fr>
+</item>
+<item name="APP_NAME">
+	<ru>Поиск маршрутов в телекомууникационных сетях</ru>
+	<en>Network pathfinder</en>
+	<fr>Pathfinder reseau</fr>
+</item>
+<item name="INPUT_MODE">
+	<ru>Режим ввода</ru>
+	<en>Input mode</en>
+	<fr>Pathfinder reseau</fr>
+</item>
+<item name="BY_HAND_MODE">
+	<ru>Спроектировать сеть</ru>
+	<en>Design network</en>
+	<fr>Pathfinder reseau</fr>
+</item>
+<item name="FROM_FILE_MODE">
+	<ru>Загрузить из файла</ru>
+	<en>Load from file</en>
+	<fr>Pathfinder reseau</fr>
+</item>
+<item name="RANDOM_MODE">
+	<ru>Сгенерировать случайно</ru>
+	<en>Generate random</en>
+	<fr>Pathfinder reseau</fr>
+</item>
+<item name="DIRECTED_GRAPH">
+	<ru>Направленный граф</ru>
+	<en>Directed graph</en>
+	<fr>Pathfinder reseau</fr>
+</item>
+<item name="UNDIRECTED_GRAPH">
+	<ru>Ненаправленный граф</ru>
+	<en>Undirected graph</en>
+	<fr>Pathfinder reseau</fr>
+</item>
+<item name="LINK_FACTORY_NAME">
+	<ru>Ребро</ru>
+	<en>Link</en>
+	<fr>Pathfinder reseau</fr>
+</item>
+<item name="NODE_FACTORY_NAME">
+	<ru>Вершина</ru>
+	<en>Node</en>
+	<fr>Pathfinder reseau</fr>
+</item>
+<item name="DELETE">
+	<ru>Удалить</ru>
+	<en>Delete</en>
+	<fr>Effacer</fr>
+</item>
+<item name="CHANGE_COLOR">
+	<ru>Изменить цвет</ru>
+	<en>Change color</en>
+	<fr>Changer la couleur</fr>
+</item>
+<item name="INCLUDE">
+	<ru>Включить в путь</ru>
+	<en>Include</en>
+	<fr>Comprendre</fr>
+</item>
+<item name="EXCLUDE">
+	<ru>Исключить из пути</ru>
+	<en>Exclude</en>
+	<fr>Exclure</fr>
+</item>
+<item name="WEIGHT">
+	<ru>Вес </ru>
+	<en>Weight </en>
+	<fr>Exclure </fr>
+</item>
+<item name="CAPACITY">
+	<ru>Пропускная способность </ru>
+	<en>Capacity </en>
+	<fr>Exclure </fr>
+</item>
+<item name="EDIT_EDGE_PROP">
+	<ru>Редактировать параметры ребра</ru>
+	<en>Edit edge properties</en>
+	<fr>Exclure </fr>
+</item>
+<item name="EDGE_PROP">
+	<ru>Параметры ребра</ru>
+	<en>Edge properties</en>
+	<fr>Exclure </fr>
+</item>
+
+</words>

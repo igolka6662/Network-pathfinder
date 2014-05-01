@@ -1,5 +1,6 @@
 package edu.pathfinder.view.menu;
 
+import edu.pathfinder.core.Localization;
 import edu.pathfinder.graphmodel.impl.GraphElements;
 import edu.pathfinder.graphmodel.impl.GraphElements.Edge;
 import edu.pathfinder.view.menu.items.ChangeColorOfEdgeMenuItem;
@@ -27,6 +28,7 @@ public class MouseMenus {
             this.add(new ChangeColorOfEdgeMenuItem<GraphElements.Edge>());
             this.add(new DeleteEdgeMenuItem<GraphElements.Edge>());
             this.add(new includeCheckBoxEdge());
+            this.add(new excludeCheckBoxEdge());
             this.addSeparator();
             this.add(new WeightDisplay());
             this.add(new CapacityDisplay());
@@ -52,7 +54,7 @@ public class MouseMenus {
         }
         
         public  EdgePropItem(final JFrame frame) {            
-            super("Edit Edge Properties...");
+            super(Localization.getInstance().getLocalizedString("EDIT_EDGE_PROP"));
             this.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     EdgePropertyDialog dialog = new EdgePropertyDialog(frame, edge);
@@ -66,13 +68,13 @@ public class MouseMenus {
     }
     public static class WeightDisplay extends JMenuItem implements EdgeMenuListener<GraphElements.Edge> {
         public void setEdgeAndView(GraphElements.Edge e, VisualizationViewer visComp) {
-            this.setText("Weight " + e + " = " + e.getWeight());
+            this.setText(Localization.getInstance().getLocalizedString("WEIGHT") + e + " = " + e.getWeight());
         }
     }
     
     public static class CapacityDisplay extends JMenuItem implements EdgeMenuListener<GraphElements.Edge> {
         public void setEdgeAndView(GraphElements.Edge e, VisualizationViewer visComp) {
-            this.setText("Capacity " + e + " = " + e.getCapacity());
+            this.setText(Localization.getInstance().getLocalizedString("CAPACITY") + e + " = " + e.getCapacity());
         }
     }
     
@@ -80,7 +82,7 @@ public class MouseMenus {
         GraphElements.Edge edge;
         
         public includeCheckBoxEdge() {
-            super("Include");
+            super(Localization.getInstance().getLocalizedString("INCLUDE"));
             this.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                 	edge.setInclude(isSelected());
@@ -91,8 +93,28 @@ public class MouseMenus {
 		@Override
 		public void setEdgeAndView(Edge e, VisualizationViewer visComp) {
 			this.edge = e;
-            this.setSelected(e.isInclude());
+            this.setSelected(e.isInclude() && !edge.isExclude());
 			
+		}
+        
+    }
+    
+    public static class excludeCheckBoxEdge extends JCheckBoxMenuItem implements EdgeMenuListener<GraphElements.Edge> {
+        GraphElements.Edge edge;
+        
+        public excludeCheckBoxEdge() {
+            super(Localization.getInstance().getLocalizedString("EXCLUDE"));
+            this.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                	edge.setExclude(isSelected() && !edge.isInclude());
+                }
+                
+            });
+        }
+		@Override
+		public void setEdgeAndView(Edge e, VisualizationViewer visComp) {
+			this.edge = e;
+            this.setSelected(e.isExclude());
 		}
         
     }
@@ -103,54 +125,16 @@ public class MouseMenus {
             this.add(new DeleteVertexMenuItem<GraphElements.Vertex>());
             this.addSeparator();
             this.add(new includeCheckBox());
-//            this.add(new pscCheckBox());
-//            this.add(new tdmCheckBox());
+            this.add(new excludeCheckBox());
         }
     }
     
-    public static class pscCheckBox extends JCheckBoxMenuItem implements VertexMenuListener<GraphElements.Vertex> {
-        GraphElements.Vertex v;
-        
-        public pscCheckBox() {
-            super("PSC Capable");
-            this.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    v.setPacketSwitchCapable(isSelected());
-                }
-                
-            });
-        }
-        public void setVertexAndView(GraphElements.Vertex v, VisualizationViewer visComp) {
-            this.v = v;
-            this.setSelected(v.isPacketSwitchCapable());
-        }
-        
-    }
-    
-        public static class tdmCheckBox extends JCheckBoxMenuItem implements VertexMenuListener<GraphElements.Vertex> {
-        GraphElements.Vertex v;
-        
-        public tdmCheckBox() {
-            super("TDM Capable");
-            this.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    v.setTdmSwitchCapable(isSelected());
-                }
-                
-            });
-        }
-        public void setVertexAndView(GraphElements.Vertex v, VisualizationViewer visComp) {
-            this.v = v;
-            this.setSelected(v.isTdmSwitchCapable());
-        }
-        
-    }
         
         public static class includeCheckBox extends JCheckBoxMenuItem implements VertexMenuListener<GraphElements.Vertex> {
             GraphElements.Vertex v;
             
             public includeCheckBox() {
-                super("Include");
+                super(Localization.getInstance().getLocalizedString("INCLUDE"));
                 this.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         v.setInclude(isSelected());
@@ -160,10 +144,27 @@ public class MouseMenus {
             }
             public void setVertexAndView(GraphElements.Vertex v, VisualizationViewer visComp) {
                 this.v = v;
-                this.setSelected(v.isInclude());
+                this.setSelected(v.isInclude() && !v.isExclude());
             }
             
         }
-    
+        
+        public static class excludeCheckBox extends JCheckBoxMenuItem implements VertexMenuListener<GraphElements.Vertex> {
+            GraphElements.Vertex v;
+            
+            public excludeCheckBox() {
+                super(Localization.getInstance().getLocalizedString("EXCLUDE"));
+                this.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        v.setExclude(isSelected() && !v.isInclude());
+                    }
+                    
+                });
+            }
+            public void setVertexAndView(GraphElements.Vertex v, VisualizationViewer visComp) {
+                this.v = v;
+                this.setSelected(v.isExclude());
+            }
+        }
 }
 

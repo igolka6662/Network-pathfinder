@@ -1,6 +1,7 @@
 package edu.pathfinder.view.menu.items;
 
 
+import edu.pathfinder.core.Localization;
 import edu.pathfinder.view.menu.VertexMenuListener;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.picking.PickedState;
@@ -39,7 +40,7 @@ public class DeleteVertexMenuItem<V> extends JMenuItem implements VertexMenuList
     public void setVertexAndView(V v, VisualizationViewer visComp) {
         this.vertex = v;
         this.visComp = visComp;
-        this.setText("Delete Vertex " + v.toString());
+        this.setText(Localization.getInstance().getLocalizedString("DELETE")+ " " + v.toString());
     }
     
 }

@@ -1,8 +1,7 @@
-package edu.pathfinder;
+package edu.pathfinder.alg;
 
 import java.util.List;
 
-import edu.pathfinder.alg.AlgSolver;
 import edu.pathfinder.criter.Strategy;
 import edu.pathfinder.graphmodel.Constraint;
 import edu.pathfinder.graphmodel.impl.GraphElements.Vertex;

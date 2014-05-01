@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 
 import org.apache.commons.collections15.Transformer;
 
+import edu.pathfinder.core.Localization;
 import edu.pathfinder.view.menu.EdgeMenuListener;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
@@ -46,8 +47,6 @@ public class ChangeColorOfEdgeMenuItem <E> extends JMenuItem implements EdgeMenu
 
 
             	visComp.getRenderContext().setEdgeDrawPaintTransformer(edgePaint);
-            	//visComp.getRenderContext().setEdgeStrokeTransformer(edgeStroke);
-                //visComp.getRenderContext().setVertexFillPaintTransformer(vertexColor);
                 visComp.repaint();
             }
         });
@@ -58,7 +57,7 @@ public class ChangeColorOfEdgeMenuItem <E> extends JMenuItem implements EdgeMenu
 	public void setEdgeAndView(E edge, VisualizationViewer visComp) {
 		this.edge = edge;
         this.visComp = visComp;
-        this.setText("Change Edges color " + edge.toString());
+        this.setText(Localization.getInstance().getLocalizedString("CHANGE_COLOR")+ " " + edge.toString());
 	}
 
 

@@ -1,5 +1,8 @@
 <?xml version="1.1" encoding="UTF-8" ?>
 <settings>
-	<language>english</language>
+	<language>ru</language> <!-- possible values english, russian ,french -->
+	<localization-file>local.xml</localization-file> <!-- this folder contains file with localization named according with language name -->
 	<vertex-icon>vertex.png</vertex-icon>
+	<graph-file>graph.dat</graph-file>
+	<input>byhand</input> <!-- possible values: byhand,file,random -->
 </settings>

@@ -15,14 +15,17 @@ import org.xml.sax.SAXException;
 
 public class Configuration {
 	
+	private static Configuration instance;
+	
 	public static final String RESOURCES_LOCATION = new File(".").getAbsolutePath()+"/resources/";
 	public static final String CONGIGURATION_FILE_NAME = "configuration.xml";
 	
 	private Element allSettings = null;
 	private String applicationLanguage = null;
 	private String vertexsIcon = null;
+	private String localizationFileName = null;
 	
-	public Configuration(){
+	private Configuration(){
 		try {
 			init();
 		} catch (SAXException e) {
@@ -35,6 +38,7 @@ public class Configuration {
 			System.out.println("ParserConfigurationException in Configuration");
 			e.printStackTrace();
 		}
+		Localization.getInstance().setLang(getApplicationLanguage());
 	}
 	
 	private void init() throws SAXException, IOException, ParserConfigurationException{
@@ -51,6 +55,13 @@ public class Configuration {
 		if (settings.getNodeType() == Node.ELEMENT_NODE){
 			allSettings = (Element) settings;
 		}
+	}
+	
+	public static Configuration getInstance(){
+		if (instance == null){
+			instance = new Configuration();
+		}
+		return instance;
 	}
 
 	public String getApplicationLanguage() {
@@ -73,6 +84,17 @@ public class Configuration {
 
 	public void setVertexsIcon(String vertexsIcon) {
 		this.vertexsIcon = vertexsIcon;
+	}
+
+	public String getLocalizationFileName() {
+		if (localizationFileName == null){
+			setApplicationLanguage(allSettings.getElementsByTagName("localization-file").item(0).getTextContent());
+		}
+		return localizationFileName;
+	}
+
+	public void setLocalizationFileName(String localizationFileName) {
+		this.localizationFileName = localizationFileName;
 	}
 
 }

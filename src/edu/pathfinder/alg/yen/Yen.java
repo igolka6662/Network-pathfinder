@@ -3,8 +3,8 @@ package edu.pathfinder.alg.yen;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.pathfinder.MultiAlgSolver;
 import edu.pathfinder.alg.AlgSolver;
+import edu.pathfinder.alg.MultiAlgSolver;
 import edu.pathfinder.alg.deikstra.Deikstra;
 import edu.pathfinder.criter.Strategy;
 import edu.pathfinder.graphmodel.Constraint;

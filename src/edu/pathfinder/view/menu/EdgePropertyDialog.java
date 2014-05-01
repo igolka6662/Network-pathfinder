@@ -1,5 +1,6 @@
 package edu.pathfinder.view.menu;
 
+import edu.pathfinder.core.Localization;
 import edu.pathfinder.graphmodel.impl.GraphElements;
 
 public class EdgePropertyDialog extends javax.swing.JDialog {
@@ -10,7 +11,7 @@ public class EdgePropertyDialog extends javax.swing.JDialog {
         super(parent, true);
         initComponents();
         this.edge = edge;
-        setTitle("Edge: " + edge.toString());
+        setTitle(Localization.getInstance().getLocalizedString("LINK_FACTORY_NAME")+": " + edge.toString());
         this.capFormattedTextField.setValue(edge.getCapacity() );
         this.wtFormattedTextField.setValue(edge.getWeight());
     }
@@ -29,7 +30,7 @@ public class EdgePropertyDialog extends javax.swing.JDialog {
         wtFormattedTextField = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Edge Properties");
+        setTitle(Localization.getInstance().getLocalizedString("EDGE_PROP"));
         jButton1.setText("OK");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -37,9 +38,9 @@ public class EdgePropertyDialog extends javax.swing.JDialog {
             }
         });
 
-        jLabel1.setText("Capacity:");
+        jLabel1.setText(Localization.getInstance().getLocalizedString("CAPACITY")+":");
 
-        jLabel2.setText("Weight:");
+        jLabel2.setText(Localization.getInstance().getLocalizedString("WEIGHT")+":");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
